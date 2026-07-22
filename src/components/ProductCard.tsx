@@ -1,11 +1,18 @@
 import { Link } from "react-router-dom";
 import type { Product } from "../data/products";
+import { useCart } from "../context/CartContext";
 
 interface ProductCardProps {
   product: Product;
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
+  const { addToCart, cartItems } = useCart();
+  const productInCart = cartItems.find((item) => item.id === product.id);
+
+  const productQuantityLabel = productInCart
+    ? `(${productInCart.quantity})`
+    : "";
   return (
     <div className="product-card">
       <img
@@ -22,8 +29,9 @@ export default function ProductCard({ product }: ProductCardProps) {
           </Link>
           <button
             className="btn btn-primary"
+            onClick={() => addToCart(product.id)}
           >
-            Add to Cart 
+            Add to Cart {productQuantityLabel}
           </button>
         </div>
       </div>
