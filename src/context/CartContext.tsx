@@ -3,7 +3,7 @@ import { getProductById } from "../data/products";
 import type { Product } from "../data/products";
 
 type CartItem = { id: number; quantity: number };
-type CartItemWithProduct = CartItem & { product?: Product };
+type CartItemWithProduct = CartItem & { product: Product };
 
 type CartContextType = {
   cartItems: CartItem[];
@@ -36,12 +36,16 @@ export default function CartProvider({ children }: { children: React.ReactNode }
   }
 
   function getCartItemsWithProducts() {
-    return cartItems
-      .map((item) => ({
-        ...item,
-        product: getProductById(item.id),
-      }))
-      .filter((item) => item.product) as CartItemWithProduct[];
+    const mapped = cartItems.map((item) => ({
+      ...item,
+      product: getProductById(item.id),
+    }));
+
+    function hasProduct(item: CartItem & { product?: Product }): item is CartItemWithProduct {
+      return item.product !== undefined;
+    }
+
+    return mapped.filter(hasProduct);
   }
 
   function removeFromCart(productId: number) {
